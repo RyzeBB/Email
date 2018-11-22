@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	 <!-- shiro工厂bean配置 -->
+     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+         <!-- shiro的核心安全接口 -->
+         <property name="securityManager" ref="securityManager"/>
+         <!-- 要求登录时的连接 -->
+         <property name="loginUrl" value="/loginUI.do"/>
+         <!-- 登录成功后要跳转的连接(此处已经在登录中处理了) -->
+         <!-- <property name="successUrl" value="/index.jsp"></property> -->
+          <!--访问未对其授权的资源时,要跳转的连接 -->
+         <!--<property name="unauthorizedUrl" value="/default.html"></property>-->
+
+         <!--URL匹配规则
+
+（1）“?”：匹配一个字符，如”/admin?”，将匹配“ /admin1”、“/admin2”，但不匹配“/admin”
+
+（2）“*”：匹配零个或多个字符串，如“/admin*”，将匹配“ /admin”、“/admin123”，但不匹配“/admin/1”
+
+（3）“**”：匹配路径中的零个或多个路径，如“/admin/**”，将匹配“/admin/a”、“/admin/a/b”-->
+         <!-- shiro连接约束配置 -->
+         <property name="filterChainDefinitions">
+             <value>
+                 <!-- 对静态资源设置允许匿名访问 -->
+                 /images/** = anon
+                 /js/** = anon
+                 /css/** = anon
+                 /static/** = anon
+                 /bootstrap/** = anon
+                 /dist/** = anon
+                 /jquery/** = anon
+                 /404/** = anon
+                 <!-- 可匿名访问路径，例如：验证码、登录连接、退出连接等 -->
+                 /login.do = anon
+              <!--   / = user-->
+                 <!-- 退出 -->
+                 /logout.do = logout  <!-- 会调用Subject的logout方法,此方法会将session清空 -->
+
+                 <!-- 剩余其他路径，必须认证通过才可以访问 -->
+                 <!--为游客放开url-->
+
+                 /indexUI.do = anon
+               <!--  /partner/partnerpage.do = anon
+                 /partner/addpartner.do = anon
+                 /partner/partnerinfo.do = anon
+                 /partner/listUI.do = anon
+                 /guestlogin.do = anon-->
+                 <!--/information/details_info.do = anon
+                 /information/mycourses.do = anon
+                 /information/infocenter.do = anon
+                 /information/mycourses.do = anon
+                 /information/details.do = anon-->
+                 /mycourses/listUI.do =anon
+                 /mycourses/doFindObjects.do = anon
+                 /mycourses/editUI.do=anon
+                 /mycourses/doFindObjectById.do=anon
+                 /signUp/listUI_guest.do = anon
+                 /signUp/noMemberSignUp.do=anon
+
+                 /signIn/doSignIn.do = anon
+                 /signIn/identifying.do = anon
+                 /signIn/getVeryCode.do = anon
+
+                 /weixin.do = anon
+                 /wx_register.do = anon
+
+                 /** = user,rememberMe
+                 /loginUI.do = anon,rememberMe
+                <!-- /** = authc-->
+
+
+             </value>
+         </property>
+         <property name="filters">
+             <map>
+                 <entry key="rememberMe" value-ref="rememberMeFilter"/>
+             </map>
+         </property>
+     </bean>
+    <bean id="rememberMeFilter" class="com.cwca.customer.common.filter.RememberMeFilter"/>
+
+     <!-- 配置shiro安全管理器 -->
+     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+         <property name="realm" ref="shiroUserRealm"/>
+
+         <property name="rememberMeManager" ref="rememberMeManager"/>
+     </bean>
+     <!-- 自定义Realm -->
+    <bean id="shiroUserRealm" class="com.cwca.customer.common.service.impl.ShiroUserRealm">
+    	<!-- 配置凭证算法匹配器 -->
+    	<property name="credentialsMatcher">
+    		<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+    			<property name="hashAlgorithmName" value="MD5"/>
+    			<!-- <property name="hashIterations" value="1024"/> -->
+    		</bean>
+    	</property>
+    </bean>
+	<!--Shiro生命周期处理器-->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+
+    <!-- 会话Cookie模板 -->
+    <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <constructor-arg value="sid"/>
+        <property name="httpOnly" value="true"/>
+        <property name="maxAge" value="-1"/>
+    </bean>
+    <bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <constructor-arg value="rememberMe"/>
+        <property name="httpOnly" value="true"/>
+        <property name="maxAge" value="3000000"/><!-- 30天 -->
+    </bean>
+    <!-- rememberMe管理器 -->
+    <bean id="rememberMeManager"
+          class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+        <property name="cipherKey" value="#{T(org.apache.shiro.codec.Base64).decode('4AvVhmFLUs0KTA3Kprsdag==')}"/>
+        <property name="cookie" ref="rememberMeCookie"/>
+    </bean>
+
+</beans>

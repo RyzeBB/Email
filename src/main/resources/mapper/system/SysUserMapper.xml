@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cwca.customer.system.dao.SysUserDao">
+	<!-- 查询用户列表 -->
+	<select id="findPageObjects" 
+	    resultType="com.cwca.customer.system.entity.SysUser">
+		select
+			id,
+			unittax,
+			username,
+			email,
+			mobile,
+			valid
+		from
+			sys_users
+		<where>
+			<if test="username!=null and username!=''">
+				username LIKE CONCAT('%',#{username},'%')
+			</if>
+		</where>
+		 LIMIT #{startIndex},#{pageSize}
+	</select>
+	<!-- 查询记录总条数 -->
+	<select id="getRowCount" 
+            parameterType="com.cwca.customer.system.entity.SysUser"
+            resultType="java.lang.Integer">
+		select count(*) from sys_users
+		<where>
+			<if test="username!=null and username!=''">
+				username LIKE CONCAT('%',#{username},'%')
+			</if>
+		</where>
+	</select>
+	<!-- 根据id查询用户信息 -->
+	<select id="findObjectById"
+			parameterType="java.lang.Integer"
+			resultType="com.cwca.customer.system.entity.SysUser">
+		select
+			id,
+			unittax,
+			unitname,
+			username,
+			password,
+			email,
+			mobile,
+			qrCodePath
+		from
+			sys_users
+		where
+			id = #{id}
+	</select>
+	<!-- 切换用户启用/禁用状态 -->
+	<update id="validById">
+		update
+			sys_users
+		set
+			valid = #{valid}
+		where
+			id = #{id}
+	</update>
+	<!-- 根据名称查询用户信息 -->
+	<select id="findObjectByName"
+			parameterType="java.lang.String"
+			resultType="com.cwca.customer.system.entity.SysUser">
+		select
+		id,
+		unittax,
+		username,
+		password,
+		salt,
+		email,
+		mobile
+		from
+		sys_users
+		where
+		valid = 1
+		and
+		username = #{username}
+	</select>
+
+	<!-- 保存用户信息 -->
+	<insert id="insertObject" 
+	 parameterType="com.cwca.customer.system.entity.SysUser"
+	 useGeneratedKeys="true" 
+	 keyProperty="id">
+		insert into
+			sys_users
+			(unittax,unitname,username,password,salt,email,mobile,chat,valid,createdTime,modifiedTime,
+			createdUser,modifiedUser,qrCodePath)
+		values
+			(#{unittax},#{username},#{username},#{password},#{salt},#{email},#{mobile},#{chat},
+			1,NOW(),NOW(),#{createdUser},#{modifiedUser},#{qrCodePath});
+	</insert>
+
+	<!-- 修改更新用户信息 -->
+	<update id="updateObject" 
+	    parameterType="com.cwca.customer.system.entity.SysUser">
+		update
+			sys_users
+		set
+			unittax = #{unittax},
+			username = #{username},
+			password = #{password},
+			salt = #{salt},
+			email = #{email},
+			mobile = #{mobile},
+			modifiedTime = NOW(),
+			modifiedUser = #{modifiedUser}
+		where
+			id = #{id}
+	</update>
+
+	<update id="updateQrCodePath">
+		update sys_users
+		set qrCodePath = #{qrCodePath}
+		where id = #{id}
+	</update>
+	<update id="updateOpenId">
+		update sys_users
+		set openid = #{openid}
+		where id = #{id}
+	</update>
+
+	<!-- 查询用户权限 -->
+	<select id="findUserPermissions"
+	        parameterType="integer" 
+	        resultType="string">
+		select 
+			m.permission 
+		from 
+			sys_user_roles ur,sys_role_menus rm ,sys_menus m
+		where
+			ur.role_id = rm.role_id 
+		and
+			rm.menu_id = m.id 
+		and
+			ur.user_id = #{userId}
+	</select>
+	<!-- 查询登陆用户可见的所有菜单 -->
+	<select id="findUserMenus" 
+	        parameterType="java.lang.Integer" 
+	        resultType="map">
+		select 
+		    m.id,
+			m.name,
+			m.url,
+			m.parentId
+		from sys_user_roles ur join sys_role_menus rm join sys_menus m
+		on   ur.role_id = rm.role_id and rm.menu_id = m.id 
+		     and  ur.user_id = #{id}
+		where type = 1
+	</select>
+	<select id="findUserRoles" parameterType="integer" resultType="string">
+		select role_id
+		from sys_user_roles r
+		where r.user_id = #{userId}
+	</select>
+
+	<insert id="insertObjectList" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+		  insert into sys_users(unittax,unitname,username,mobile,chat,valid) values
+		<foreach collection="list" item="sysUser" index="index" separator="," >
+			(#{sysUser.unittax},#{sysUser.unitname},#{sysUser.username},#{sysUser.mobile},#{sysUser.chat},1)
+		</foreach>
+	</insert>
+
+</mapper>

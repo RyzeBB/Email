@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.cwca.customer.salary.dao.BillDao">
+    <insert id="insertObjects" parameterType="java.util.List">
+        insert into db_emp values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.zydm},#{item.xh},#{item.bmmc},#{item.jbgz},#{item.tzhyxbz},#{item.yyxbz},
+            #{item.txfybz},
+            #{item.lzjtf},#{item.gzjxgzjs},#{item.gzjxkhxs},#{item.gif},#{item.jj},#{item.flhj},#{item.gzjx},
+            #{item.yjjxkhxs},
+            #{item.jbbz},#{item.zxjl},#{item.txf},#{item.yjjx},#{item.tc},#{item.jbf},#{item.kqkk},#{item.gjj},
+            #{item.qyenj},#{item.ynssde},#{item.kgrsds},#{item.jrtxfyhzzsf},#{item.flf},#{item.jtf},#{item.cnf},
+            #{item.cnfksbf},
+            #{item.qt},#{item.qtkk},#{item.kkhj},#{item.yfgz},#{item.ylbx},#{item.sybx},#{item.yilbx},
+            #{item.zfgjj},#{item.qynj},#{item.dkgs},#{item.sfgz})
+        </foreach>
+    </insert>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true"
+	   xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util-4.3.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:context="http://www.springframework.org/schema/context">
+
+
+   <util:properties id="cfg" location="classpath:config.properties"/>  
+   <!--配置DruidDataSource连接池 -->
+   <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		destroy-method="close" init-method="init" lazy-init="true">
+		<property name="driverClassName" value="#{cfg.driver}" /><!--name属性名不能更改  -->
+		<property name="url" value="#{cfg.url}" />
+		<property name="username" value="#{cfg.username}" />
+		<property name="password" value="#{cfg.password}" />
+		<!-- 初始化连接大小 -->
+		<property name="initialSize" value="#{cfg.initialSize}" />
+		<!-- 连接池最大数量 -->
+		<property name="maxActive" value="#{cfg.maxActive}" />
+		<!-- 连接池最小空闲 -->
+		<property name="minIdle" value="#{cfg.minIdle}" />
+		<!-- 获取连接最大等待时间 -->
+		<property name="maxWait" value="#{cfg.maxWait}" />
+     </bean>
+     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	   <property name="dataSource" ref="dataSource"></property>
+	   <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	   <!-- 自动扫描mapping.xml文件 -->
+	   <property name="mapperLocations" >
+			<list>
+			<value>classpath:mapper/*/*.xml</value>
+			</list>
+		</property>
+	 </bean>
+    <!-- Mapper接口所在包，Spring会自动查找其下的Mapper -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.cwca.customer.**.dao "/>
+	</bean>
+	<!--不扫controller-->
+	<context:component-scan base-package="com.cwca.customer">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+	</context:component-scan>
+	<!--设置注解驱动的事务管理  -->
+	<!--<tx:annotation-driven transaction-manager="txManager"/>
+	<aop:aspectj-autoproxy  proxy-target-class="true"/>-->
+	<!-- 事务核心管理器,封装了所有事务操作. 依赖于连接池 -->
+	<bean name="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<!--配置事务通知-->
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="*" isolation="REPEATABLE_READ" rollback-for="com.cwca.customer.common.exception.ServiceException"/>
+		</tx:attributes>
+	</tx:advice>
+	<!-- 配置织入-->
+	<aop:config><!--* com.cwca.customer..service..*.*(..)-->
+		<aop:pointcut expression="execution(* com.cwca.customer..service..*.*(..))" id="txPc" />
+	  	<aop:advisor advice-ref="txAdvice" pointcut-ref="txPc" />
+	</aop:config>
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
