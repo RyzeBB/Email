@@ -7,6 +7,16 @@ import lombok.*;
 @AllArgsConstructor@NoArgsConstructor
 @ToString
 public class Bill {
+    /* (#{item.id},#{item.zydm},#{item.xh},#{item.zyxm},#{item.bmmc},#{item.jbgz},#{item.tzhyxbz},#{item.yyxbz},
+            #{item.txfybz},#{item.txfxbz},
+            #{item.lzjtf},#{item.gzjxgzjs},#{item.gzjxkhxs},#{item.gif},#{item.jj},#{item.flhj},#{item.gzjx},
+           #{item.yjjxgzjs},#{item.yjjxkhxs},#{item.jbbz},#{item.zxjl},#{item.txf},#{item.yjjx},
+           #{item.tc},#{item.jbf},#{item.kqkk},#{item.gjj},#{item.qyenj},#{item.ynssde},
+           #{item.kgrsds},#{item.jrtxfyhzzsf},#{item.flf},#{item.jtf},#{item.cnf},#{item.cnfksbf},
+           #{item.qt},#{item.qtkk},#{item.kkhj},#{item.yfgz},#{item.ylbx},#{item.sybx},
+           #{item.yilbx},#{item.zfgjj},#{item.qynj},#{item.dkgs},#{item.sfgz}
+           */
+    private int id;
     private String zydm;
     private String xh;
     private String zyxm;
@@ -19,7 +29,7 @@ public class Bill {
     private String lzjtf;
     private String gzjxgzjs;
     private String gzjxkhxs;
-    private String gjf;
+    private String gif;
     private String jj;
     private String flhj;
     private String gzjx;

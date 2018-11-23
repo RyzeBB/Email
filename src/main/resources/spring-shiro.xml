@@ -69,7 +69,7 @@
 
                  /** = user,rememberMe
                  /loginUI.do = anon,rememberMe
-                <!-- /** = authc-->
+             <!--    /** = authc-->
 
 
              </value>

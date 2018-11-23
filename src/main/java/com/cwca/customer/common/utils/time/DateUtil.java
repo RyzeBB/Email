@@ -297,6 +297,18 @@ public class DateUtil {
 	public static java.sql.Timestamp nowTime(){
 		return dateToTime(new java.util.Date());
 	}
+
+	public static int getCurrectMonth(){
+		Calendar cal = Calendar.getInstance();
+		int i = cal.get(Calendar.MONTH) + 1;
+		return i;
+	}
+
+	public static int getCurrectYear(){
+		Calendar cal = Calendar.getInstance();
+		int i = cal.get(Calendar.YEAR);
+		return i;
+	}
 	public static void main(String[] args) {
     	//System.out.println(getDays());
     	//System.out.println(getAfterDayWeek("3"));

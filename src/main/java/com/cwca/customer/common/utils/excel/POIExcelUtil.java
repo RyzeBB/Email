@@ -1,6 +1,8 @@
 package com.cwca.customer.common.utils.excel;
 
 
+import com.cwca.customer.common.utils.BillUtil;
+import com.cwca.customer.salary.entity.Bill;
 import com.cwca.customer.salary.entity.EmpInfo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -182,13 +184,44 @@ public class POIExcelUtil {
         mergedRegion(sheet);
         int lastRowNum = getRowNum(sheet);
         int lastCellNum = getColumnNum(sheet);
-        for (int i = 1; i < lastRowNum; i++) {
+        //i=1
+        for (int i=0; i < lastRowNum; i++) {
             Row row = sheet.getRow(i);
-            sheetdatas.add(getRowDataObject(sheet, row, lastCellNum,type,proplist,true));
+            try{
+                sheetdatas.add(getRowDataObject(sheet, row, lastCellNum,type,proplist,true));
+            }catch (Exception e){
+                throw new Exception("行数据获取出错",e);
+            }
+
         }
         return sheetdatas;
     }
+    /**
+     * 获取sheet中的数据
+     * @param sheet
+     * @param type
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public static <T> List<T> getSheetDataObjectSkipHead(Sheet sheet,Class<T> type,List<String> proplist) throws Exception {
+        List<T> sheetdatas = new ArrayList<T>();
+        //需要先合并单元格数据
+        mergedRegion(sheet);
+        int lastRowNum = getRowNum(sheet);
+        int lastCellNum = getColumnNum(sheet);
+        //i=1
+        for (int i=1; i < lastRowNum; i++) {
+            Row row = sheet.getRow(i);
+            try{
+                sheetdatas.add(getRowDataObject(sheet, row, lastCellNum,type,proplist,true));
+            }catch (Exception e){
+                throw new Exception("行数据获取出错",e);
+            }
 
+        }
+        return sheetdatas;
+    }
 
 
 	/**
@@ -277,6 +310,7 @@ public class POIExcelUtil {
         }else {
             newpds = AdjustProperty(t,pds);
         }*/
+
         if(isRemove){
             List<PropertyDescriptor> pdlist = new ArrayList <>();
             for (PropertyDescriptor pd:
@@ -285,8 +319,11 @@ public class POIExcelUtil {
                     pdlist.add(pd);
                 }
             }
-            PropertyDescriptor[] propertyDescriptors = (PropertyDescriptor[]) pdlist.toArray();
-            newpds = AdjustProperty(t,propertyDescriptors);
+            PropertyDescriptor[] pdarray = new PropertyDescriptor[proplist.size()];
+            for (int i=0;i<pdlist.size();i++){
+                pdarray[i]  = pdlist.get(i);
+            }
+            newpds = AdjustProperty(t,pdarray);
         }else {
             newpds = AdjustProperty(t,pds);
         }
@@ -300,7 +337,11 @@ public class POIExcelUtil {
                     pd = ((PropertyDescriptor)object);
                 }
             }
-            String value = getCellData(row.getCell(i));
+            String value = null;
+
+                value = getCellData(row.getCell(i));
+
+
             //null  插入报错  ,这里插入NULL,但date会报错
             if(!StringUtils.isEmpty(value)){
                 Class<?> aClass = pd.getPropertyType();
@@ -471,7 +512,7 @@ public class POIExcelUtil {
      * @param cellName 格式为：A1,B3
      * @return
      */
-    public static String getSheetCellValueWithCellName(Sheet sheet, String cellName) {
+    public static String getSheetCellValueWithCellName(Sheet sheet, String cellName) throws Exception{
         CellReference cellReference = new CellReference(cellName);
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());
@@ -574,10 +615,11 @@ public class POIExcelUtil {
      * @param cell
      * @return
      */
-    public static String getCellData(Cell cell) {
+    public static String getCellData(Cell cell) throws Exception{
         String cellValue = "";
+
         if (cell != null) {
-            try {
+            try{
                 switch (cell.getCellType()) {
                     case Cell.CELL_TYPE_BLANK://空白
                         cellValue = "";
@@ -602,6 +644,7 @@ public class POIExcelUtil {
                         cellValue = replaceBlank(cell.getStringCellValue());
                         break;
                     case Cell.CELL_TYPE_FORMULA: //公式型 2
+                        //公式处理为String类型
                         cell.setCellType(Cell.CELL_TYPE_STRING);
                         cellValue = replaceBlank(cell.getStringCellValue());
                         break;
@@ -613,8 +656,7 @@ public class POIExcelUtil {
                         break;
                 }
             } catch (Exception e) {
-                System.out.println("读取Excel单元格数据出错：" + e.getMessage());
-                return cellValue.trim();
+                throw new Exception("单元格解析出错",e);
             }
         }
         return cellValue;
@@ -815,15 +857,12 @@ public class POIExcelUtil {
     public static void main(String[] args) {
 
         try{
-            Workbook excelWorkbook = POIExcelUtil.getExcelWorkbook("F:/3.xlsx");
+            Workbook excelWorkbook = POIExcelUtil.getExcelWorkbook("F:/01.xls");
             Sheet sheet = POIExcelUtil.getSheetByNum(excelWorkbook, 1);
-            List<String> proplist = new ArrayList <>();
-            proplist.add("empcode");
-            proplist.add("empname");
-            proplist.add("departname");
-            proplist.add("email");
-            List <EmpInfo> sheetDataObject = POIExcelUtil.getSheetDataObject(sheet, EmpInfo.class, proplist);
+/*            List <Bill> sheetDataObject = POIExcelUtil.getSheetDataObject(sheet, Bill.class, BillUtil.getHxbill());
             System.out.println(sheetDataObject.get(0));
+            System.out.println(sheetDataObject.get(1));
+            System.out.println(sheetDataObject.get(2));*/
         }catch (Exception e){
             System.out.println(e.getMessage());
         }

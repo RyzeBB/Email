@@ -90,11 +90,13 @@
           一般添加完依赖会在类路径添加一个log4j2.xml文件
          -->
 
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.7</version>
+            <version>2.11.1</version>
         </dependency>
+
 
         <!-- 整合jackson (在本项目中对请求的响应我们要采用json格式) -->
 
@@ -330,7 +332,7 @@
          </plugins>
      </build>-->
     <build>
-        <finalName>wxmember</finalName>
+        <finalName>email</finalName>
         <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
             <plugins>
                 <plugin>

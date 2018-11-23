@@ -23,7 +23,7 @@ public class ExcelExportSXXSSF {
  
 	// 定义工作表
 	private SXSSFWorkbook wb;
- 
+
 	/**
 	 * 定义工作表中的sheet
 	 */
@@ -187,16 +187,21 @@ public class ExcelExportSXXSSF {
 	 * @throws Exception
 	 */
 	//+MyUtil.getCurrentTimeStr() 
-	public String exportFile() throws Exception {
+	public String exportFile(boolean isAllpath) throws Exception {
 		String filename = filePrefix+"_"+UUID.randomUUID().toString().substring(0, 8)+".xlsx";
-		FileOutputStream out = new FileOutputStream(filePath + filename);
+		FileOutputStream out = new FileOutputStream(filePath +"/"+ filename);
+
 		wb.write(out);
 		out.flush();
 		out.close();
 		setFileAllPath(fileWebPath + filename);
+		if(isAllpath){
+			return filePath+"/"+filename;
+		}
 		return fileWebPath + filename;
 	}
- 
+
+
 	/**
 	 * 反射方法，通过get方法获取对象属性
 	 * 
@@ -314,9 +319,8 @@ public class ExcelExportSXXSSF {
 	public void setFileAllPath(String fileAllPath) {
 		this.fileAllPath = fileAllPath;
 	}
-	/*
 	public static void main(String[] args) throws Exception {
-		*//**            导出文件存放物理路径
+		/**            导出文件存放物理路径
 		 * @param fileWebPath
 		 *            导出文件web下载路径
 		 * @param filePrefix
@@ -327,7 +331,7 @@ public class ExcelExportSXXSSF {
 		 *            导出文件列标题
 		 * @param fieldCodes
 		 * 			  导出数据对象的字段名称     
-		 * @param flushRows*//*
+		 * @param flushRows*/
 		//导出文件存放的路径，并且是虚拟目录指向的路径，在web服务器
 		String filePath = "f:/develop/upload/temp/";
 		//导出文件的前缀
@@ -349,13 +353,13 @@ public class ExcelExportSXXSSF {
 		fieldCodes.add("price");//价格
 		fieldCodes.add("ypxxTest.b.c");
 		
-		//准备导出的数据，将数据存入list，且list中对象的字段名称必须是刚才传入ExcelExportSXXSSF的名称
+	/*	//准备导出的数据，将数据存入list，且list中对象的字段名称必须是刚才传入ExcelExportSXXSSF的名称
 		List<YpxxTest> list = new ArrayList<YpxxTest>();
 		
 		YpxxTest ypxx1 = new YpxxTest("001", "青霉素", 5);
 		YpxxTest ypxx2 = new YpxxTest("002", "感冒胶囊", 2.5f);
 		list.add(ypxx1);
-		list.add(ypxx2);
+		list.add(ypxx2);*/
 		
 		//注意：fieldCodes和fieldNames个数必须相同且属性和title顺序一一对应，这样title和内容才一一对应
 		
@@ -367,11 +371,11 @@ public class ExcelExportSXXSSF {
 		//执行导出
 		//excelExportSXXSSF.writeDatasByObject(list);
 		//输出文件，返回下载文件的http地址
-		String webpath = excelExportSXXSSF.exportFile();
+		//String webpath = excelExportSXXSSF.exportFile();
 		
-		System.out.println(webpath);
+		//System.out.println(webpath);
 		
 		
-	}*/
+	}
  
 }

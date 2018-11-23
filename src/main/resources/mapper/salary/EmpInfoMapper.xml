@@ -6,10 +6,22 @@
     <insert id="insertObject" parameterType="empInfo" useGeneratedKeys="true" keyProperty="id">
         insert into db_emp(empcode,empname,departname,email) values(#{empcode},#{empname},#{departname},#{email})
     </insert>
-    <insert id="insertObjects" parameterType="java.util.List">
-        insert into db_emp(empcode,empname,departname,email) values
+    <insert id="insertObjectsForHx" parameterType="java.util.List">
+        insert into db_emp(empcode,empname,departname,email,orgn) values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.empcode},#{item.empname},#{item.departname},#{item.email})
+            (#{item.empcode},#{item.empname},#{item.departname},#{item.email},01)
+        </foreach>
+    </insert>
+    <insert id="insertObjectsForWb" parameterType="java.util.List">
+        insert into db_emp(empcode,empname,departname,email,orgn) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.empcode},#{item.empname},#{item.departname},#{item.email},02)
+        </foreach>
+    </insert>
+    <insert id="insertObjectsForCa" parameterType="java.util.List">
+        insert into db_emp(empcode,empname,departname,email,orgn) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.empcode},#{item.empname},#{item.departname},#{item.email},03)
         </foreach>
     </insert>
     <delete id="deleteObject">

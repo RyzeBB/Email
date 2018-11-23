@@ -1,5 +1,9 @@
 package com.cwca.customer.salary.entity;
 
+import lombok.*;
+
+
+@Setter@Getter@ToString@AllArgsConstructor@NoArgsConstructor
 public class Wbbill {
     private String xh;
     private String xm;

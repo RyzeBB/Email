@@ -29,7 +29,7 @@ public class SendEmailTask implements Runnable{
    public void run() {
       JavaMailSender javaMailSender = MailUtil.getmailSender(this.host, this.port, this.username, this.password, this.protocol);
       try{
-         MailUtil.mailSendAttachment(javaMailSender,this.toEmail,this.fromEmail,this.subject,this.text,this.attchment);
+       //  MailUtil.mailSendAttachment(javaMailSender,this.toEmail,this.fromEmail,this.subject,this.text,this.attchment);
       }catch (Exception e){
          throw new RuntimeException("MessagingException");
       }

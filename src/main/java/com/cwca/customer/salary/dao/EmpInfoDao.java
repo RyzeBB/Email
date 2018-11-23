@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface EmpInfoDao extends BaseDao<EmpInfo> {
 
-    int insertObjects(List<EmpInfo> t);
+    int insertObjectsForHx(List<EmpInfo> t);
+    int insertObjectsForWb(List<EmpInfo> t);
+    int insertObjectsForCa(List<EmpInfo> t);
     List<EmpInfo> selectObjects( @Param("email") String email,
                                  @Param("startIndex") Integer startIndex,
                                  @Param("pageSize") Integer pageSize);

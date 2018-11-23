@@ -4,17 +4,29 @@
 
 <mapper namespace="com.cwca.customer.salary.dao.BillDao">
     <insert id="insertObjects" parameterType="java.util.List">
-        insert into db_emp values
+        insert into db_bill values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.id},#{item.zydm},#{item.xh},#{item.bmmc},#{item.jbgz},#{item.tzhyxbz},#{item.yyxbz},
-            #{item.txfybz},
-            #{item.lzjtf},#{item.gzjxgzjs},#{item.gzjxkhxs},#{item.gif},#{item.jj},#{item.flhj},#{item.gzjx},
-            #{item.yjjxkhxs},
-            #{item.jbbz},#{item.zxjl},#{item.txf},#{item.yjjx},#{item.tc},#{item.jbf},#{item.kqkk},#{item.gjj},
-            #{item.qyenj},#{item.ynssde},#{item.kgrsds},#{item.jrtxfyhzzsf},#{item.flf},#{item.jtf},#{item.cnf},
-            #{item.cnfksbf},
-            #{item.qt},#{item.qtkk},#{item.kkhj},#{item.yfgz},#{item.ylbx},#{item.sybx},#{item.yilbx},
-            #{item.zfgjj},#{item.qynj},#{item.dkgs},#{item.sfgz})
+            (#{item.id},#{item.zydm},#{item.xh},#{item.zyxm},#{item.bmmc},#{item.jbgz},#{item.tzhyxbz}
+            ,#{item.yyxbz}, #{item.txfybz},#{item.txfxbz},#{item.lzjtf},#{item.gzjxgzjs},#{item.gzjxkhxs},#{item.gif},
+            #{item.jj},#{item.flhj},#{item.gzjx},#{item.yjjxgzjs},#{item.yjjxkhxs},#{item.jbbz},#{item.zxjl}
+            ,#{item.txf},#{item.yjjx},#{item.tc},#{item.jbf},#{item.kqkk},#{item.gjj},#{item.qyenj}
+            ,#{item.ynssde}, #{item.kgrsds},#{item.jrtxfyhzzsf},#{item.flf},#{item.jtf},#{item.cnf},#{item.cnfksbf}
+            ,#{item.qt},#{item.qtkk},#{item.kkhj},#{item.yfgz},#{item.ylbx},#{item.sybx},#{item.yilbx}
+            ,#{item.zfgjj},#{item.qynj},#{item.dkgs},#{item.sfgz})
         </foreach>
     </insert>
+    <select id="selectObject" resultType="bill">
+        select *
+        from db_bill
+        where zydm = #{zydm}
+    </select>
 </mapper>
+
+       <!--(
+        id, zydm, xh, zyxm, bmmc, jbgz, tzhyxbz,
+        yyxbz, txfybz, txfxbz, lzjtf, gzjxgzjs, gzjxkhxs,
+        gif, jj, flhj, gzjx, yjjxgzjs, yjjxkhxs, jbbz,
+        zxjl, txf, yjjx, tc, jbf, kqkk, gjj,
+        qyenj, ynssde, kgrsds, jrtxfyhzzsf, flf, jtf,
+        cnf, cnfksbf, qt, qtkk, kkhj, yfgz, ylbx,
+        sybx, yilbx, zfgjj, qynj, dkgs, sfgz) -->

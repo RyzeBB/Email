@@ -13,7 +13,7 @@ public class EmpInfo {
     private String empname;
     private String departname;
     private String email;
-
+    private String orgncode;
     public EmpInfo(String empcode,String empname,String departname,String email){
         this.empcode = empcode;
         this.empname = empname;
