@@ -6,6 +6,9 @@ import java.util.List;
 
 
 public class StringUtil {
+    public static String getSetUpcase(String str,String prefix){
+        return prefix+str.substring(0,1).toUpperCase()+str.substring(1);
+    }
 	
 /*	public static List<Integer> parseIntegerList(String strList, List<Integer> listInt){
 		List<String> listStr = Arrays.asList(strList.split(","));

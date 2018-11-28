@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.cwca.customer.salary.dao.TcDao">
+    <insert id="insertObjects" parameterType="java.util.List">
+        insert into db_tc values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.xh},#{item.xm},#{item.bmmc},#{item.xsjl},#{item.fpcxxfjl},#{item.skfwfjl}
+            ,#{item.jdfwfjl},#{item.xkhjl},#{item.dsjl},#{item.xj},#{item.bmwcbl},#{item.jrxdjl},#{item.pxjl}
+            ,#{item.xmjljjl},#{item.tchj},#{item.yx})
+        </foreach>
+    </insert>
+
+    <select id="selectObjects" resultType="tc">
+        select *
+        from db_tc
+
+    </select>
+    <update id="truncateTc">
+        truncate table db_tc
+    </update>
+</mapper>
+
+       <!--(
+        id, zydm, xh, zyxm, bmmc, jbgz, tzhyxbz,
+        yyxbz, txfybz, txfxbz, lzjtf, gzjxgzjs, gzjxkhxs,
+        gif, jj, flhj, gzjx, yjjxgzjs, yjjxkhxs, jbbz,
+        zxjl, txf, yjjx, tc, jbf, kqkk, gjj,
+        qyenj, ynssde, kgrsds, jrtxfyhzzsf, flf, jtf,
+        cnf, cnfksbf, qt, qtkk, kkhj, yfgz, ylbx,
+        sybx, yilbx, zfgjj, qynj, dkgs, sfgz) -->

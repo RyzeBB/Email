@@ -6,20 +6,23 @@
     <insert id="insertObjects" parameterType="java.util.List">
         insert into db_bill values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.id},#{item.zydm},#{item.xh},#{item.zyxm},#{item.bmmc},#{item.jbgz},#{item.tzhyxbz}
-            ,#{item.yyxbz}, #{item.txfybz},#{item.txfxbz},#{item.lzjtf},#{item.gzjxgzjs},#{item.gzjxkhxs},#{item.gif},
-            #{item.jj},#{item.flhj},#{item.gzjx},#{item.yjjxgzjs},#{item.yjjxkhxs},#{item.jbbz},#{item.zxjl}
-            ,#{item.txf},#{item.yjjx},#{item.tc},#{item.jbf},#{item.kqkk},#{item.gjj},#{item.qyenj}
-            ,#{item.ynssde}, #{item.kgrsds},#{item.jrtxfyhzzsf},#{item.flf},#{item.jtf},#{item.cnf},#{item.cnfksbf}
-            ,#{item.qt},#{item.qtkk},#{item.kkhj},#{item.yfgz},#{item.ylbx},#{item.sybx},#{item.yilbx}
-            ,#{item.zfgjj},#{item.qynj},#{item.dkgs},#{item.sfgz})
+            (#{item.id},#{item.zydm},#{item.zyxm},#{item.bmmc},#{item.jbgz},#{item.gzjxgzjs},#{item.gzjxkhxs}
+            ,#{item.gzjx},#{item.yjjxgzjs},#{item.yjjxkhxs},#{item.yjjx},#{item.tc},#{item.jbbz},#{item.kqkk}
+            ,#{item.flf},#{item.jtf},#{item.cnf},#{item.cnfksbf},#{item.txf},#{item.zxjl},#{item.qt},#{item.qtkk}
+            ,#{item.flhj},#{item.yfgz},#{item.ylbx},#{item.sybx},#{item.yilbx},#{item.zfgjj},#{item.qynj},#{item.dkgs}
+            ,#{item.sfgz},#{item.gjf},#{item.jj},#{item.kkhj},#{item.tzhyxbz},#{item.yyxbz},#{item.txfybz},#{item.txfxbz}
+            ,#{item.txfce},#{item.lzjtf},#{item.ynssde},#{item.jrtxfyhzzsf})
         </foreach>
     </insert>
+
     <select id="selectObject" resultType="bill">
         select *
         from db_bill
         where zydm = #{zydm}
     </select>
+    <update id="truncateBill">
+        truncate table db_bill
+    </update>
 </mapper>
 
        <!--(

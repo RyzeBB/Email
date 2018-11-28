@@ -4,11 +4,14 @@ import com.cwca.customer.salary.entity.Records;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 public interface ExcelService {
 
     void uploadEmpInfo(MultipartFile mFile);
     void uploadBill(MultipartFile mFile);
-    Records sendEmail(String username, String password, HttpServletRequest request);
+    void uploadTc(MultipartFile mFile);
+    Records sendEmail(String username, String password, HttpServletRequest requestd,String sendType);
+    Records sendTcEmail(String username, String password, HttpServletRequest requestd,String sendType);
+    void gzFileDelete(boolean checked,HttpServletRequest request);
+    void tcFileDelete(boolean checked,HttpServletRequest request);
 }

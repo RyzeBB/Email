@@ -7,19 +7,19 @@
         insert into db_emp(empcode,empname,departname,email) values(#{empcode},#{empname},#{departname},#{email})
     </insert>
     <insert id="insertObjectsForHx" parameterType="java.util.List">
-        insert into db_emp(empcode,empname,departname,email,orgn) values
+        insert into db_emp(empcode,empname,departname,email,orgncode) values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.empcode},#{item.empname},#{item.departname},#{item.email},01)
         </foreach>
     </insert>
     <insert id="insertObjectsForWb" parameterType="java.util.List">
-        insert into db_emp(empcode,empname,departname,email,orgn) values
+        insert into db_emp(empcode,empname,departname,email,orgncode) values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.empcode},#{item.empname},#{item.departname},#{item.email},02)
         </foreach>
     </insert>
     <insert id="insertObjectsForCa" parameterType="java.util.List">
-        insert into db_emp(empcode,empname,departname,email,orgn) values
+        insert into db_emp(empcode,empname,departname,email,orgncode) values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.empcode},#{item.empname},#{item.departname},#{item.email},03)
         </foreach>

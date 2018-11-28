@@ -1,7 +1,7 @@
 package com.cwca.customer.common.utils.excel;
 
 
-import com.cwca.customer.common.utils.BillUtil;
+import com.cwca.customer.common.utils.StringUtil;
 import com.cwca.customer.salary.entity.Bill;
 import com.cwca.customer.salary.entity.EmpInfo;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +21,8 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -184,20 +186,15 @@ public class POIExcelUtil {
         mergedRegion(sheet);
         int lastRowNum = getRowNum(sheet);
         int lastCellNum = getColumnNum(sheet);
-        //i=1
-        for (int i=0; i < lastRowNum; i++) {
+        for (int i = 0; i < lastRowNum; i++) {
             Row row = sheet.getRow(i);
-            try{
-                sheetdatas.add(getRowDataObject(sheet, row, lastCellNum,type,proplist,true));
-            }catch (Exception e){
-                throw new Exception("行数据获取出错",e);
-            }
-
+            sheetdatas.add(getRowDataObject(sheet, row, lastCellNum,type,proplist));
         }
         return sheetdatas;
     }
+
     /**
-     * 获取sheet中的数据
+     * 获取sheet中的数据,跳过表头
      * @param sheet
      * @param type
      * @param <T>
@@ -210,15 +207,9 @@ public class POIExcelUtil {
         mergedRegion(sheet);
         int lastRowNum = getRowNum(sheet);
         int lastCellNum = getColumnNum(sheet);
-        //i=1
-        for (int i=1; i < lastRowNum; i++) {
+        for (int i = 1; i < lastRowNum; i++) {
             Row row = sheet.getRow(i);
-            try{
-                sheetdatas.add(getRowDataObject(sheet, row, lastCellNum,type,proplist,true));
-            }catch (Exception e){
-                throw new Exception("行数据获取出错",e);
-            }
-
+            sheetdatas.add(getRowDataObject(sheet, row, lastCellNum,type,proplist));
         }
         return sheetdatas;
     }
@@ -281,37 +272,26 @@ public class POIExcelUtil {
         }
         return rowdatas;
     }
- /*
-    *//**
-     * 读取一行数据,封装到对象中
-     * 这里proplist的顺序和cell要一一对应，这里排除掉id
+
+    /**
+     *
+     * @param sheet
+     * @param row
+     * @param lastCellNum
+     * @param type
+     * @param proplist 表格对应的对象的prop
+     * @param isRemove
      * @param <T>
+     * @return 不会写了艹 有问题，为什么在这里我做了属性调整
      * @throws Exception
-     * @throws IntrospectionException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     * @throws InvocationTargetException
-     * @throws IllegalArgumentException
      */
-    public static <T> T getRowDataObject(Sheet sheet, Row row, int lastCellNum,Class<T> type,List<String> proplist,boolean isRemove) throws Exception  {
+    /*public static <T> T getRowDataObject(Sheet sheet, Row row, int lastCellNum,Class<T> type,List<String> proplist,boolean isRemove) throws Exception  {
 
     	T t = type.newInstance();
     	PropertyDescriptor[] pds = Introspector.getBeanInfo(type,Object.class).getPropertyDescriptors();
         Object[] newpds;
-
-      /*  if(removeid){
-            PropertyDescriptor[] pyd = new PropertyDescriptor[pds.length-1];
-            for(int i=0;i<pds.length;i++){
-                if("id".equals(pds[i].getName())){
-                    pyd = delete(i, pds);
-                }
-            }
-             newpds = AdjustProperty(t,pyd);
-        }else {
-            newpds = AdjustProperty(t,pds);
-        }*/
-
         if(isRemove){
+            //去除多余与表格字段不相符的
             List<PropertyDescriptor> pdlist = new ArrayList <>();
             for (PropertyDescriptor pd:
                  pds) {
@@ -319,11 +299,9 @@ public class POIExcelUtil {
                     pdlist.add(pd);
                 }
             }
-            PropertyDescriptor[] pdarray = new PropertyDescriptor[proplist.size()];
-            for (int i=0;i<pdlist.size();i++){
-                pdarray[i]  = pdlist.get(i);
-            }
-            newpds = AdjustProperty(t,pdarray);
+            PropertyDescriptor[] propertyDescriptors = (PropertyDescriptor[]) pdlist.toArray();
+            //
+            newpds = AdjustProperty(t,propertyDescriptors);
         }else {
             newpds = AdjustProperty(t,pds);
         }
@@ -332,16 +310,13 @@ public class POIExcelUtil {
         }
         for (int i = 0; i < lastCellNum; i++) {
             PropertyDescriptor pd = null;
+            //根据proplist 找寻pd
             for (Object object: newpds) {
                 if(((PropertyDescriptor)object).getName().equals(proplist.get(i))){
                     pd = ((PropertyDescriptor)object);
                 }
             }
-            String value = null;
-
-                value = getCellData(row.getCell(i));
-
-
+            String value = getCellData(row.getCell(i));
             //null  插入报错  ,这里插入NULL,但date会报错
             if(!StringUtils.isEmpty(value)){
                 Class<?> aClass = pd.getPropertyType();
@@ -353,7 +328,7 @@ public class POIExcelUtil {
             }
         }
         return t;
-    }
+    }*/
 /*
     public static PropertyDescriptor[] delete(int index, PropertyDescriptor array[]) {
         //数组的删除其实就是覆盖前一位
@@ -364,10 +339,46 @@ public class POIExcelUtil {
         System.arraycopy(array, 0, arrNew, 0, arrNew.length);
         return arrNew;
     }*/
+
+    /**
+     * 将行数据封装到对象
+     * @param sheet
+     * @param row
+     * @param lastCellNum
+     * @param type
+     * @param proplist
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public static <T> T getRowDataObject(Sheet sheet, Row row, int lastCellNum,Class<T> type,List<String> proplist) throws Exception  {
+        T t = type.newInstance();
+        Method setmethod;
+
+            for (int i = 0; i < lastCellNum; i++) {
+                String value = getCellData(row.getCell(i));
+                //null  插入报错  ,这里插入NULL,但date会报错
+                if(!StringUtils.isEmpty(value)){
+                    String s = proplist.get(i);
+                    Method getmethod = type.getMethod("get" + s.substring(0, 1).toUpperCase() + s.substring(1));
+                    String typename = getmethod.getGenericReturnType().toString();
+                    if(typename.equals("class java.util.Date")){
+                        setmethod = type.getMethod(StringUtil.getSetUpcase(proplist.get(i),"set"),Date.class);
+                        setmethod.invoke(t,com.cwca.customer.common.utils.time.DateUtil.fomatDate(value));
+                    }else{
+                        setmethod = type.getMethod(StringUtil.getSetUpcase(proplist.get(i),"set"),String.class);
+                        setmethod.invoke(t,value);
+                    }
+                }
+            }
+
+
+        return t;
+    }
    /**
     * PropertyDescriptor[] pds 解决属性顺序和表格中属性顺序不一致
     */
-   public static Object[] AdjustProperty(Object t, PropertyDescriptor[] pds) throws Exception{
+/*   public static Object[] AdjustProperty(Object t, PropertyDescriptor[] pds) throws Exception{
 	   Field[] df = t.getClass().getDeclaredFields();
 	   List<PropertyDescriptor> lpd = new ArrayList<>();
 	   List<String> strs = new ArrayList<>();
@@ -384,7 +395,7 @@ public class POIExcelUtil {
 			}
 		}
 		return lpd.toArray();
-    }
+    }*/
 
 
     
@@ -512,7 +523,7 @@ public class POIExcelUtil {
      * @param cellName 格式为：A1,B3
      * @return
      */
-    public static String getSheetCellValueWithCellName(Sheet sheet, String cellName) throws Exception{
+    public static String getSheetCellValueWithCellName(Sheet sheet, String cellName) throws Exception {
         CellReference cellReference = new CellReference(cellName);
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());
@@ -615,11 +626,10 @@ public class POIExcelUtil {
      * @param cell
      * @return
      */
-    public static String getCellData(Cell cell) throws Exception{
+    public static String getCellData(Cell cell) throws Exception {
         String cellValue = "";
-
         if (cell != null) {
-            try{
+            try {
                 switch (cell.getCellType()) {
                     case Cell.CELL_TYPE_BLANK://空白
                         cellValue = "";
@@ -644,7 +654,6 @@ public class POIExcelUtil {
                         cellValue = replaceBlank(cell.getStringCellValue());
                         break;
                     case Cell.CELL_TYPE_FORMULA: //公式型 2
-                        //公式处理为String类型
                         cell.setCellType(Cell.CELL_TYPE_STRING);
                         cellValue = replaceBlank(cell.getStringCellValue());
                         break;
@@ -656,10 +665,11 @@ public class POIExcelUtil {
                         break;
                 }
             } catch (Exception e) {
-                throw new Exception("单元格解析出错",e);
+                System.out.println("读取Excel单元格数据出错：" + e.getMessage());
+                throw e;
             }
         }
-        return cellValue;
+        return NumFormatUtil.removezero(cellValue.trim());
     }
  
     public static String replaceBlank(String source) {
@@ -856,16 +866,39 @@ public class POIExcelUtil {
 
     public static void main(String[] args) {
 
-        try{
-            Workbook excelWorkbook = POIExcelUtil.getExcelWorkbook("F:/01.xls");
+       /* try{
+            Workbook excelWorkbook = POIExcelUtil.getExcelWorkbook("F:/3.xlsx");
             Sheet sheet = POIExcelUtil.getSheetByNum(excelWorkbook, 1);
-/*            List <Bill> sheetDataObject = POIExcelUtil.getSheetDataObject(sheet, Bill.class, BillUtil.getHxbill());
+            List<String> proplist = new ArrayList <>();
+            proplist.add("empcode");
+            proplist.add("empname");
+            proplist.add("departname");
+            proplist.add("email");
+            List <EmpInfo> sheetDataObject = POIExcelUtil.getSheetDataObject(sheet, EmpInfo.class, proplist);
             System.out.println(sheetDataObject.get(0));
-            System.out.println(sheetDataObject.get(1));
-            System.out.println(sheetDataObject.get(2));*/
         }catch (Exception e){
             System.out.println(e.getMessage());
+        }*/
+
+        try{
+
+            Method getmethod = Bill.class.getMethod("getDate");
+            Method setmethod = Bill.class.getMethod("setDate",Date.class);
+           /* if(getmethod.getGenericReturnType().toString().equals("class java.util.Date")){
+                System.out.println("111");
+                Bill bill = Bill.class.newInstance();
+                setmethod.invoke(bill,new Date());
+                System.out.println(bill.getDate().toString());
+            }*/
+           /* Field date = Bill.class.getDeclaredField("date");
+            date.getGenericType().toString();
+            System.out.println();
+*/
+        }catch (Exception e){
+
         }
+
+
 
     }
 }

@@ -24,7 +24,6 @@ public class ExcelController {
     @RequestMapping("empinfo.do")
     @ResponseBody
     public JsonResult uploadEmpInfo(MultipartFile mFile){
-        System.out.println(mFile.getSize());
         excelService.uploadEmpInfo(mFile);
         return new JsonResult();
     }
@@ -37,13 +36,38 @@ public class ExcelController {
         excelService.uploadBill(mFile);
         return new JsonResult();
     }
-
+    @RequestMapping("tc.do")
+    @ResponseBody
+    public JsonResult uploadTc(MultipartFile mFile){
+        //  System.out.println(mFile.getSize());
+        excelService.uploadTc(mFile);
+        return new JsonResult();
+    }
 
     @RequestMapping("send.do")
     @ResponseBody
-    public JsonResult sendEmail(String username, String password, HttpServletRequest request){
-        Records records = excelService.sendEmail(username, password, request);
+    public JsonResult sendEmail(String username, String password, HttpServletRequest request,String sendType){
+        Records records = excelService.sendEmail(username, password, request,sendType);
         return new JsonResult(records);
     }
 
+    @RequestMapping("sendtc.do")
+    @ResponseBody
+    public JsonResult sendTcEmail(String username, String password, HttpServletRequest request, String sendType){
+        Records records = excelService.sendTcEmail(username, password, request,sendType);
+        return new JsonResult(records);
+    }
+
+    @RequestMapping("gzFleDelete.do")
+    @ResponseBody
+    public JsonResult gzFileDelete(boolean checked,HttpServletRequest request){
+        excelService.gzFileDelete(checked,request);
+        return new JsonResult();
+    }
+    @RequestMapping("tcFleDelete.do")
+    @ResponseBody
+    public JsonResult tcFileDelete(boolean checked,HttpServletRequest request){
+        excelService.tcFileDelete(checked,request);
+        return new JsonResult();
+    }
 }

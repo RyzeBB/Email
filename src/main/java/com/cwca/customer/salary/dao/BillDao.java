@@ -9,4 +9,5 @@ import java.util.List;
 public interface BillDao extends BaseDao<Bill> {
     int insertObjects(List<Bill> t);
     List<Bill> selectObject(@Param("zydm") String zydm);
+    void truncateBill();
 }
